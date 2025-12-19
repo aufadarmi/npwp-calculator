@@ -4,25 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator NPWP Suami Istri</title>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+  <!-- MAIN CONTENT -->
   <div class="container">
-    <h1>Kalkulator Perbandingan NPWP Suami & Istri</h1>
-    <p class="subtitle">Simulasi pajak PPh 21: NPWP digabung vs dipisah (PH/MT)</p>
+    <h1>Kalkulator Pajak Penghasilan Suami & Istri</h1>
+    <p class="subtitle">
+      Simulasi Pajak Penghasilan: NPWP digabung vs dipisah (PH/MT)
+    </p>
 
     <div class="grid">
       <div>
         <label>Penghasilan Neto Suami (Rp)</label>
-        <input type="number" id="incomeHusband" placeholder="contoh: 110.000.000" />
+        <input type="text" id="incomeHusband" placeholder="contoh: 110.000.000" oninput="formatInputRupiah(this)" />
       </div>
+
       <div>
         <label>Penghasilan Neto Istri (Rp)</label>
-        <input type="number" id="incomeWife" placeholder="contoh: 100.000.000" />
+        <input type="text" id="incomeWife" placeholder="contoh: 100.000.000" oninput="formatInputRupiah(this)" />
       </div>
+
       <div>
         <label>Status PTKP Suami</label>
         <select id="ptkpHusband">
@@ -32,11 +35,17 @@
           <option value="72000000">K/3 (72.000.000)</option>
         </select>
       </div>
+
       <div>
         <label>Status PTKP Istri</label>
-        <select id="ptkpWife">
-          <option value="54000000">TK/0 (54.000.000)</option>
-        </select>
+        <div class="fixed-select">
+          TK/0 (54.000.000)
+        </div>
+        <input type="hidden" id="ptkpWife" value="54000000">
+        <small class="note">
+          ℹ️ PTKP istri yang menikah selalu menggunakan status
+          <strong>TK/0</strong>.
+        </small>
       </div>
     </div>
 
@@ -46,6 +55,22 @@
 
     <div id="output" class="result" style="display:none"></div>
   </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    © 2025 <strong>Pajak Pasutri</strong> — Feedback: 
+    <a href="https://twitter.com/aufadarmi" target="_blank" rel="noopener">@aufadarmi</a>
+  </footer>
+
+  <!-- SIDEBAR DETAIL -->
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <h3 id="sidebarTitle">Detail Perhitungan</h3>
+      <button onclick="closeSidebar()">✕</button>
+    </div>
+    <div id="sidebarContent" class="sidebar-content"></div>
+  </div>
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
   <!-- JS -->
   <script src="js/script.js"></script>
