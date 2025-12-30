@@ -1,47 +1,56 @@
-/* =====================    FORMAT INPUT RUPIAH ===================== */
-function formatInputRupiah(el) {
-  let value = el.value.replace(/\D/g, '');
-  el.value = new Intl.NumberFormat('id-ID').format(value);
-}
+/* ================================
+   HELPER FUNCTIONS
+================================ */
 
-/* =====================    FORMAT RUPIAH ===================== */
 function formatRupiah(num) {
-  return 'Rp ' + Number(num).toLocaleString('id-ID');
+  return 'Rp ' + Math.round(num).toLocaleString('id-ID');
 }
 
-/* =====================    HITUNG PPH PROGRESIF (UU HPP) ===================== */
+function formatInputRupiah(input) {
+  // Menghapus karakter selain angka
+  let value = input.value.replace(/\D/g, '');
+  // Format menjadi ribuan
+  input.value = value ? Number(value).toLocaleString('id-ID') : '';
+}
+
+function show(id) {
+  document.getElementById(id)?.classList.remove('hidden');
+}
+
+function hide(id) {
+  document.getElementById(id)?.classList.add('hidden');
+}
+
+/* ================================
+   CORE TAX LOGIC
+================================ */
+
 function calculatePPh(pkp) {
   if (pkp <= 0) return 0;
 
+  // Struktur tarif pajak progresif terbaru (UU HPP)
   const layers = [
     { limit: 60000000, rate: 0.05 },
-    { limit: 190000000, rate: 0.15 },
-    { limit: 250000000, rate: 0.25 },
-    { limit: 4500000000, rate: 0.30 },
+    { limit: 190000000, rate: 0.15 }, // Sisa dari 250jt - 60jt
+    { limit: 250000000, rate: 0.25 }, // Sisa dari 500jt - 250jt
+    { limit: 4500000000, rate: 0.30 }, // Sisa dari 5M - 500jt
     { limit: Infinity, rate: 0.35 }
   ];
 
   let remaining = pkp;
   let tax = 0;
-
   for (const layer of layers) {
     if (remaining <= 0) break;
     const taxable = Math.min(remaining, layer.limit);
     tax += taxable * layer.rate;
     remaining -= taxable;
   }
-
   return Math.round(tax);
 }
 
-/* =====================    BREAKDOWN DETAIL PPH ===================== */
 function breakdownPPhDetailed(pkp) {
   if (pkp <= 0) {
-    return {
-      html: 'PKP ≤ 0 → Tidak ada PPh terutang<br>',
-      sumText: '',
-      total: 0
-    };
+    return { html: 'PKP ≤ 0 → Tidak ada PPh terutang<br>', sumText: 'Rp 0', total: 0 };
   }
 
   const layers = [
@@ -62,24 +71,113 @@ function breakdownPPhDetailed(pkp) {
     const taxable = Math.min(remaining, layer.limit);
     const tax = Math.round(taxable * layer.rate);
 
-    html += `
-      ${layer.rate * 100}% × ${formatRupiah(taxable)}
-      = <strong>${formatRupiah(tax)}</strong><br>
-    `;
-
+    html += `${layer.rate * 100}% × ${formatRupiah(taxable)} = <strong>${formatRupiah(tax)}</strong><br>`;
     tierTaxes.push(formatRupiah(tax));
     totalTax += tax;
     remaining -= taxable;
   }
 
-  return {
-    html,
-    sumText: tierTaxes.join(' + '),
-    total: totalTax
-  };
+  return { html, sumText: tierTaxes.join(' + '), total: totalTax };
 }
 
-/* =====================    SIDEBAR CONTROL ===================== */
+/* ================================
+   GLOBAL STATE & MAIN CALCULATION
+================================ */
+
+let lastCalculationData = null;
+
+function calculate() {
+  // Ambil value dan hapus titik (separator ribuan) agar bisa dihitung
+  const ih = Number(document.getElementById('incomeHusband').value.replace(/\./g, '') || 0);
+  const iw = Number(document.getElementById('incomeWife').value.replace(/\./g, '') || 0);
+  const ptkpH = Number(document.getElementById('ptkpHusband').value);
+  const ptkpW = Number(document.getElementById('ptkpWife').value);
+
+  const pkpH = Math.max(0, ih - ptkpH);
+  const pkpW = Math.max(0, iw - ptkpW);
+
+  const pphH = calculatePPh(pkpH);
+  const pphW = calculatePPh(pkpW);
+
+  // Kalkulasi untuk simulasi Gabungan (PH/MT)
+  const totalIncome = ih + iw;
+  const totalPTKP = ptkpH + ptkpW;
+  const pphCombined = calculatePPh(Math.max(0, totalIncome - totalPTKP));
+
+  lastCalculationData = {
+    ih, iw,
+    ptkpHusband: ptkpH,
+    ptkpWife: ptkpW,
+    pphHusbandPaid: pphH,
+    pphWifePaid: pphW,
+    pphCombined
+  };
+
+  renderBaselineResult(pphH, pphW);
+
+  // Reset tampilan flow
+  show('awareness-card');
+  hide('explanation-panel');
+  hide('phmt-wrapper');
+  hide('tax-planning-cta');
+}
+
+/* ================================
+   UI RENDERING
+================================ */
+
+function renderBaselineResult(pphH, pphW) {
+  const output = document.getElementById('output');
+  output.innerHTML = `
+    <table>
+      <tr>
+        <th></th>
+        <th class="col-header">Suami</th>
+        <th class="col-header">Istri</th>
+      </tr>
+      <tr>
+        <th>Pajak Penghasilan Setahun</th>
+        <td class="clickable" onclick="showDetailPPh('Suami', ${lastCalculationData.ih}, ${lastCalculationData.ptkpHusband})">
+          ${formatRupiah(pphH)}
+        </td>
+        <td class="clickable" onclick="showDetailPPh('Istri', ${lastCalculationData.iw}, ${lastCalculationData.ptkpWife})">
+          ${formatRupiah(pphW)}
+        </td>
+      </tr>
+    </table>
+  `;
+  output.style.display = 'block';
+}
+
+function renderPHMT() {
+  if (!lastCalculationData) return;
+
+  const { ih, iw, pphCombined } = lastCalculationData;
+  const totalIncome = ih + iw;
+
+  const allocH = totalIncome ? Math.round((ih / totalIncome) * pphCombined) : 0;
+  const allocW = pphCombined - allocH;
+
+  document.getElementById('phmt-wrapper').innerHTML = `
+    <table>
+      <tr>
+        <th></th>
+        <th class="col-header">Suami (Alokasi)</th>
+        <th class="col-header">Istri (Alokasi)</th>
+      </tr>
+      <tr>
+        <th>Simulasi PH/MT (Gabungan)</th>
+        <td class="clickable" onclick="showDetailPHMT()">${formatRupiah(allocH)}</td>
+        <td class="clickable" onclick="showDetailPHMT()">${formatRupiah(allocW)}</td>
+      </tr>
+    </table>
+  `;
+}
+
+/* ================================
+   SIDEBAR & MODAL CONTROL
+================================ */
+
 function openSidebar(title, content) {
   document.getElementById('sidebarTitle').innerHTML = title;
   document.getElementById('sidebarContent').innerHTML = content;
@@ -92,165 +190,135 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('active');
 }
 
-/* =====================    DETAIL – PPH TERPISAH ===================== */
-function showDetailPPh(label, income, ptkp) {
+function showDetailPPh(label, income = 0, ptkp = 0) {
   const pkp = Math.max(0, income - ptkp);
   const breakdown = breakdownPPhDetailed(pkp);
 
   openSidebar(
     `Detail PPh 21 ${label}`,
     `
-      <strong>Step 1 – Penghasilan Neto</strong><br>
-      ${formatRupiah(income)}<br><br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 1 – Penghasilan Neto</span>
+        <strong>${formatRupiah(income)}</strong>
+      </div>
 
-      <strong>Step 2 – PTKP</strong><br>
-      ${formatRupiah(ptkp)}<br><br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 2 – PTKP</span>
+        <strong>${formatRupiah(ptkp)}</strong>
+      </div>
 
-      <strong>Step 3 – Penghitungan PKP</strong><br>
-      PKP = Penghasilan Neto - PTKP<br>
-      PKP = ${formatRupiah(income)} - ${formatRupiah(ptkp)}<br>
-      <strong>PKP = ${formatRupiah(pkp)}</strong><br><br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 3 – Penghitungan PKP</span>
+        <p>PKP = ${formatRupiah(income)} - ${formatRupiah(ptkp)}</p>
+        <strong>PKP = ${formatRupiah(pkp)}</strong>
+      </div>
 
-      <strong>Step 4 – Perhitungan Tarif Progresif</strong><br>
-      ${pkp > 0 ? breakdown.html : 'PKP ≤ 0 → Tidak ada PPh terutang<br>'}<br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 4 – Tarif Progresif</span>
+        <p>${pkp > 0 ? breakdown.html : 'Tidak ada PPh terutang'}</p>
+      </div>
 
-      <strong>Total PPh 21 Setahun</strong><br>
-      ${breakdown.sumText}<br>
-      <strong>= ${formatRupiah(breakdown.total)}</strong>
+      <div class="sidebar-item" style="border-top: 2px solid var(--border-soft); margin-top: 15px; padding-top: 15px;">
+        <span class="sidebar-step-title">Total PPh 21 Setahun</span>
+        <p>${pkp > 0 ? breakdown.sumText : '0'}</p>
+        <strong>= ${formatRupiah(breakdown.total)}</strong>
+      </div>
     `
   );
 }
 
-/* =====================    DETAIL – PH/MT (GABUNG) ===================== */
-function showDetailPHMT(data) {
-  const totalIncome = (data.ih || 0) + (data.iw || 0);
-  const totalPTKP = (data.ptkpHusband || 0) + (data.ptkpWife || 0);
-  const pkpCombined = Math.max(totalIncome - totalPTKP, 0);
-
-  const breakdown = pkpCombined > 0 ? breakdownPPhDetailed(pkpCombined) : {
-    html: 'PKP ≤ 0 → Tidak ada PPh terutang<br>',
-    sumText: '',
-    total: 0
-  };
-  const totalPPh = breakdown.total;
-
-  const pphHusband = totalIncome > 0 ? Math.round((data.ih / totalIncome) * totalPPh) : 0;
-  const pphWife = totalIncome > 0 ? totalPPh - pphHusband : 0;
-
-  const kurangBayarHusband = pphHusband - (data.pphHusbandPaid || 0);
-  const kurangBayarWife = pphWife - (data.pphWifePaid || 0);
-
-  const showProgresif = pkpCombined > 0;
+function showDetailPHMT() {
+  if (!lastCalculationData) return;
+  const data = lastCalculationData;
+  const totalIncome = data.ih + data.iw;
+  const totalPTKP = data.ptkpHusband + data.ptkpWife;
+  const pkpCombined = Math.max(0, totalIncome - totalPTKP);
+  const breakdown = breakdownPPhDetailed(pkpCombined);
+  
+  const allocH = Math.round((data.ih / totalIncome) * breakdown.total);
+  const allocW = breakdown.total - allocH;
 
   openSidebar(
-    'Penggabungan Penghasilan (PH/MT)',
+    'Detail Simulasi PH/MT',
     `
-      <strong>Step 1 – Penghasilan Digabung</strong><br>
-      Suami: ${formatRupiah(data.ih || 0)}<br>
-      Istri: ${formatRupiah(data.iw || 0)}<br>
-      <strong>Total: ${formatRupiah(totalIncome)}</strong><br><br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 1 – Pendapatan Keluarga</span>
+        <p>Suami + Istri</p>
+        <strong>${formatRupiah(totalIncome)}</strong>
+      </div>
 
-      <strong>Step 2 – PTKP</strong><br>
-      Suami: ${formatRupiah(data.ptkpHusband || 0)}<br>
-      Istri: ${formatRupiah(data.ptkpWife || 0)}<br>
-      <strong>Total PTKP: ${formatRupiah(totalPTKP)}</strong><br><br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 2 – PTKP Gabungan</span>
+        <p>PTKP Suami + PTKP Istri</p>
+        <strong>${formatRupiah(totalPTKP)}</strong>
+      </div>
 
-      <strong>Step 3 – PKP Gabungan</strong><br>
-      ${formatRupiah(pkpCombined)}<br><br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 3 – PKP Gabungan</span>
+        <p>PKP = ${formatRupiah(totalIncome)} - ${formatRupiah(totalPTKP)}</p>
+        <strong>PKP = ${formatRupiah(pkpCombined)}</strong>
+      </div>
 
-      ${showProgresif ? `
-        <strong>Step 4 – Perhitungan Tarif Progresif</strong><br>
-        ${breakdown.html.replace(/<strong>/g,'').replace(/<\/strong>/g,'')}<br>
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 4 – Pajak Keluarga (Tarif Progresif)</span>
+        <p>${pkpCombined > 0 ? breakdown.html : 'Tidak ada PPh terutang'}</p>
+        <strong style="margin-top:8px; display:block;">Total: ${formatRupiah(breakdown.total)}</strong>
+      </div>
 
-        <strong>Total PPh 21 Gabungan: ${formatRupiah(totalPPh)}</strong><br><br>
+      <div class="sidebar-item" style="border-top: 2px solid var(--border-soft); margin-top: 15px; padding-top: 15px;">
+        <span class="sidebar-step-title">Step 5 – Alokasi Proporsional Suami</span>
+        <p>(${formatRupiah(data.ih)} / ${formatRupiah(totalIncome)}) × ${formatRupiah(breakdown.total)}</p>
+        <strong>= ${formatRupiah(allocH)}</strong>
+      </div>
 
-        <strong>Step 5 – Alokasi PPh ke Suami & Istri</strong><br>
-        <span style="background-color: #B2F7EF; padding: 2px 4px; border-radius: 3px;" 
-              title="PPh Gabungan: ${formatRupiah(totalPPh)}\nProporsi Suami: ${(data.ih/totalIncome*100).toFixed(2)}%\nAlokasi PPh Suami: ${formatRupiah(pphHusband)}">
-          PPh Suami: ${formatRupiah(pphHusband)}
-        </span><br>
-        <span style="background-color: #B2F7EF; padding: 2px 4px; border-radius: 3px;" 
-              title="PPh Gabungan: ${formatRupiah(totalPPh)}\nProporsi Istri: ${(data.iw/totalIncome*100).toFixed(2)}%\nAlokasi PPh Istri: ${formatRupiah(pphWife)}">
-          PPh Istri: ${formatRupiah(pphWife)}
-        </span><br><br>
-
-        <strong>Step 6 – PPh Kurang / Lebih Bayar</strong><br>
-        <span style="background-color: #FFF3B0; padding: 2px 4px; border-radius: 3px;" 
-              title="PPh Suami: ${formatRupiah(pphHusband)}\nSudah dibayar: ${formatRupiah(data.pphHusbandPaid || 0)}\nKurang / Lebih Bayar: ${formatRupiah(kurangBayarHusband)}">
-          ${formatRupiah(kurangBayarHusband)}
-        </span><br>
-        <span style="background-color: #FFF3B0; padding: 2px 4px; border-radius: 3px;" 
-              title="PPh Istri: ${formatRupiah(pphWife)}\nSudah dibayar: ${formatRupiah(data.pphWifePaid || 0)}\nKurang / Lebih Bayar: ${formatRupiah(kurangBayarWife)}">
-          ${formatRupiah(kurangBayarWife)}
-        </span><br>
-      ` : ''}
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 6 – Alokasi Proporsional Istri</span>
+        <p>(${formatRupiah(data.iw)} / ${formatRupiah(totalIncome)}) × ${formatRupiah(breakdown.total)}</p>
+        <strong>= ${formatRupiah(allocW)}</strong>
+      </div>
     `
   );
 }
 
+function showAppreciation(totalTax) {
+  document.getElementById('apprTotalTax').innerText = formatRupiah(totalTax);
+  const facts = [
+    ['Pendidikan', 'Membiayai operasional sekolah negeri'],
+    ['Kesehatan', 'Mendukung layanan kesehatan masyarakat'],
+    ['Infrastruktur', 'Membantu pembangunan fasilitas publik']
+  ];
+  const fact = facts[Math.floor(Math.random() * facts.length)];
+  document.getElementById('funfactTitle').innerText = fact[0];
+  document.getElementById('funfactDesc').innerText = fact[1];
 
-/* =====================    MAIN CALCULATION ===================== */
-function calculate() {
-  closeSidebar();
-
-  const ih = Number(document.getElementById('incomeHusband').value.replace(/\./g, '') || 0);
-  const iw = Number(document.getElementById('incomeWife').value.replace(/\./g, '') || 0);
-  const ptkpH = Number(document.getElementById('ptkpHusband').value);
-  const ptkpW = Number(document.getElementById('ptkpWife').value);
-
-  const pkpH = Math.max(0, ih - ptkpH);
-  const pkpW = Math.max(0, iw - ptkpW);
-
-  const pphH = calculatePPh(pkpH);
-  const pphW = calculatePPh(pkpW);
-
-  const totalIncome = ih + iw;
-  const totalPTKP = ptkpH + ptkpW;
-  const pkpCombined = Math.max(0, totalIncome - totalPTKP);
-  const pphCombined = calculatePPh(pkpCombined);
-
-  const allocH = totalIncome ? Math.round((ih / totalIncome) * pphCombined) : 0;
-  const allocW = pphCombined - allocH;
-
-  const output = document.getElementById('output');
-  output.style.display = 'block';
-  output.innerHTML = `
-    <table>
-      <tr>
-        <th></th>
-        <th>Suami</th>
-        <th>Istri</th>
-      </tr>
-
-      <tr>
-        <th>PPh Terpisah</th>
-        <td class="clickable"
-            onclick="showDetailPPh('Suami', ${ih}, ${ptkpH})">
-          ${formatRupiah(pphH)}
-        </td>
-        <td class="clickable"
-            onclick="showDetailPPh('Istri', ${iw}, ${ptkpW})">
-          ${formatRupiah(pphW)}
-        </td>
-      </tr>
-
-      <tr>
-        <th>Alokasi PH/MT</th>
-        <td class="clickable"
-            onclick='showDetailPHMT(${JSON.stringify({
-              ih, iw, ptkpHusband: ptkpH, ptkpWife: ptkpW, totalIncome, totalPTKP, pkpCombined,
-              pphHusbandPaid: pphH, pphWifePaid: pphW
-            })})'>
-          ${formatRupiah(allocH)}
-        </td>
-        <td class="clickable"
-            onclick='showDetailPHMT(${JSON.stringify({
-              ih, iw, ptkpHusband: ptkpH, ptkpWife: ptkpW, totalIncome, totalPTKP, pkpCombined,
-              pphHusbandPaid: pphH, pphWifePaid: pphW
-            })})'>
-          ${formatRupiah(allocW)}
-        </td>
-      </tr>
-    </table>
-  `;
+  // Pastikan class CSS sesuai (menggunakan 'active' atau 'show')
+  document.getElementById('appreciationModal').classList.add('active');
 }
+
+function closeAppreciation() {
+  document.getElementById('appreciationModal').classList.remove('active');
+}
+
+function calculateWithAppreciation() {
+  calculate();
+  if (lastCalculationData) {
+    const total = lastCalculationData.pphHusbandPaid + lastCalculationData.pphWifePaid;
+    showAppreciation(total);
+  }
+}
+
+/* ================================
+   EVENT LISTENERS (STATE BINDING)
+=============================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-show-explanation')?.addEventListener('click', () => {
+    show('explanation-panel');
+  });
+
+  document.getElementById('btn-show-phmt')?.addEventListener('click', () => {
+    renderPHMT();
+    show('phmt-wrapper');
+    show('tax-planning-cta');
+  });
+});
