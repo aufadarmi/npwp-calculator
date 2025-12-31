@@ -3,8 +3,10 @@
 ================================ */
 
 function formatRupiah(num) {
+  if (!Number.isFinite(num)) return 'Rp 0';
   return 'Rp ' + Math.round(num).toLocaleString('id-ID');
 }
+
 
 function formatInputRupiah(input) {
   // Menghapus karakter selain angka
@@ -87,11 +89,26 @@ function breakdownPPhDetailed(pkp) {
 let lastCalculationData = null;
 
 function calculate() {
-  // Ambil value dan hapus titik (separator ribuan) agar bisa dihitung
+
+    // RESET state lama
+  document.getElementById('phmt-wrapper').innerHTML = '';
+  closeSidebar();
+  
+  // Ambil value dan hapus titik (separator ribuan)
   const ih = Number(document.getElementById('incomeHusband').value.replace(/\./g, '') || 0);
   const iw = Number(document.getElementById('incomeWife').value.replace(/\./g, '') || 0);
   const ptkpH = Number(document.getElementById('ptkpHusband').value);
   const ptkpW = Number(document.getElementById('ptkpWife').value);
+
+  // ✅ EDGE CASE: tidak ada penghasilan
+  if (ih === 0 && iw === 0) {
+    hide('awareness-card');
+    hide('phmt-wrapper');
+    hide('tax-planning-cta');
+    hide('output');
+    lastCalculationData = null;
+    return;
+  }
 
   const pkpH = Math.max(0, ih - ptkpH);
   const pkpW = Math.max(0, iw - ptkpW);
@@ -99,13 +116,14 @@ function calculate() {
   const pphH = calculatePPh(pkpH);
   const pphW = calculatePPh(pkpW);
 
-  // Kalkulasi untuk simulasi Gabungan (PH/MT)
+  // Simulasi Gabungan (PH/MT)
   const totalIncome = ih + iw;
   const totalPTKP = ptkpH + ptkpW;
   const pphCombined = calculatePPh(Math.max(0, totalIncome - totalPTKP));
 
   lastCalculationData = {
-    ih, iw,
+    ih,
+    iw,
     ptkpHusband: ptkpH,
     ptkpWife: ptkpW,
     pphHusbandPaid: pphH,
@@ -121,6 +139,7 @@ function calculate() {
   hide('phmt-wrapper');
   hide('tax-planning-cta');
 }
+
 
 /* ================================
    UI RENDERING
@@ -152,27 +171,50 @@ function renderBaselineResult(pphH, pphW) {
 function renderPHMT() {
   if (!lastCalculationData) return;
 
-  const { ih, iw, pphCombined } = lastCalculationData;
-  const totalIncome = ih + iw;
+  const data = lastCalculationData;
+  const totalIncome = data.ih + data.iw;
+  const totalPTKP = data.ptkpHusband + data.ptkpWife;
 
-  const allocH = totalIncome ? Math.round((ih / totalIncome) * pphCombined) : 0;
-  const allocW = pphCombined - allocH;
+  const pkpCombined = Math.max(0, totalIncome - totalPTKP);
+  const breakdown = breakdownPPhDetailed(pkpCombined);
+
+  const allocSuami = totalIncome > 0
+    ? Math.round((data.ih / totalIncome) * breakdown.total)
+    : 0;
+
+  const allocIstri = totalIncome > 0
+    ? Math.round((data.iw / totalIncome) * breakdown.total)
+    : 0;
+
+  // STEP 6 – Selisih Pajak (Potensi Kurang Bayar)
+  const selisihSuami = allocSuami - data.pphHusbandPaid;
+  const selisihIstri = allocIstri - data.pphWifePaid;
 
   document.getElementById('phmt-wrapper').innerHTML = `
     <table>
       <tr>
         <th></th>
-        <th class="col-header">Suami (Alokasi)</th>
-        <th class="col-header">Istri (Alokasi)</th>
+        <th class="col-header">Suami</th>
+        <th class="col-header">Istri</th>
       </tr>
+
       <tr>
-        <th>Simulasi PH/MT (Gabungan)</th>
-        <td class="clickable" onclick="showDetailPHMT()">${formatRupiah(allocH)}</td>
-        <td class="clickable" onclick="showDetailPHMT()">${formatRupiah(allocW)}</td>
+        <th class="risk-header">Potensi Kurang Bayar</th>
+
+        <td class="clickable risk-amount" onclick="showDetailPHMTSuami()">
+          ${formatRupiah(selisihSuami)}
+        </td>
+
+        <td class="clickable risk-amount" onclick="showDetailPHMTIstri()">
+          ${formatRupiah(selisihIstri)}
+        </td>
       </tr>
     </table>
   `;
 }
+
+
+
 
 /* ================================
    SIDEBAR & MODAL CONTROL
@@ -221,64 +263,131 @@ function showDetailPPh(label, income = 0, ptkp = 0) {
       <div class="sidebar-item" style="border-top: 2px solid var(--border-soft); margin-top: 15px; padding-top: 15px;">
         <span class="sidebar-step-title">Total PPh 21 Setahun</span>
         <p>${pkp > 0 ? breakdown.sumText : '0'}</p>
-        <strong>= ${formatRupiah(breakdown.total)}</strong>
+        <strong>${formatRupiah(breakdown.total)}</strong>
       </div>
     `
   );
 }
 
-function showDetailPHMT() {
+function showDetailPHMTSuami() {
   if (!lastCalculationData) return;
   const data = lastCalculationData;
+
   const totalIncome = data.ih + data.iw;
   const totalPTKP = data.ptkpHusband + data.ptkpWife;
   const pkpCombined = Math.max(0, totalIncome - totalPTKP);
   const breakdown = breakdownPPhDetailed(pkpCombined);
-  
-  const allocH = Math.round((data.ih / totalIncome) * breakdown.total);
-  const allocW = breakdown.total - allocH;
+
+  const allocSuami = Math.round((data.ih / totalIncome) * breakdown.total);
+  const selisihSuami = allocSuami - data.pphHusbandPaid;
 
   openSidebar(
-    'Detail Simulasi PH/MT',
+    'Detail Simulasi PH/MT – Suami',
     `
       <div class="sidebar-item">
         <span class="sidebar-step-title">Step 1 – Pendapatan Keluarga</span>
-        <p>Suami + Istri</p>
         <strong>${formatRupiah(totalIncome)}</strong>
       </div>
 
       <div class="sidebar-item">
         <span class="sidebar-step-title">Step 2 – PTKP Gabungan</span>
-        <p>PTKP Suami + PTKP Istri</p>
         <strong>${formatRupiah(totalPTKP)}</strong>
       </div>
 
       <div class="sidebar-item">
         <span class="sidebar-step-title">Step 3 – PKP Gabungan</span>
-        <p>PKP = ${formatRupiah(totalIncome)} - ${formatRupiah(totalPTKP)}</p>
-        <strong>PKP = ${formatRupiah(pkpCombined)}</strong>
+        <strong>${formatRupiah(pkpCombined)}</strong>
       </div>
 
       <div class="sidebar-item">
-        <span class="sidebar-step-title">Step 4 – Pajak Keluarga (Tarif Progresif)</span>
-        <p>${pkpCombined > 0 ? breakdown.html : 'Tidak ada PPh terutang'}</p>
-        <strong style="margin-top:8px; display:block;">Total: ${formatRupiah(breakdown.total)}</strong>
+        <span class="sidebar-step-title">Step 4 – Pajak Gabungan Keluarga (Tarif Progresif)</span>
+        <p>
+          ${pkpCombined > 0 ? breakdown.html : 'Tidak ada PPh terutang'}
+        </p>
+        <strong style="display:block; margin-top:8px;">
+          Total Pajak Keluarga: ${formatRupiah(breakdown.total)}
+        </strong>
       </div>
 
-      <div class="sidebar-item" style="border-top: 2px solid var(--border-soft); margin-top: 15px; padding-top: 15px;">
+
+      <div class="sidebar-item" style="border-top:2px solid var(--border-soft); margin-top:15px; padding-top:15px;">
         <span class="sidebar-step-title">Step 5 – Alokasi Proporsional Suami</span>
         <p>(${formatRupiah(data.ih)} / ${formatRupiah(totalIncome)}) × ${formatRupiah(breakdown.total)}</p>
-        <strong>= ${formatRupiah(allocH)}</strong>
+        <strong>${formatRupiah(allocSuami)}</strong>
       </div>
 
       <div class="sidebar-item">
-        <span class="sidebar-step-title">Step 6 – Alokasi Proporsional Istri</span>
-        <p>(${formatRupiah(data.iw)} / ${formatRupiah(totalIncome)}) × ${formatRupiah(breakdown.total)}</p>
-        <strong>= ${formatRupiah(allocW)}</strong>
+        <span class="sidebar-step-title">Step 6 – Selisih Pajak Suami</span>
+        <p>
+          ${formatRupiah(allocSuami)} − ${formatRupiah(data.pphHusbandPaid)}
+        </p>
+        <strong>${formatRupiah(selisihSuami)}</strong>
       </div>
+
     `
   );
 }
+
+function showDetailPHMTIstri() {
+  if (!lastCalculationData) return;
+  const data = lastCalculationData;
+
+  const totalIncome = data.ih + data.iw;
+  const totalPTKP = data.ptkpHusband + data.ptkpWife;
+  const pkpCombined = Math.max(0, totalIncome - totalPTKP);
+  const breakdown = breakdownPPhDetailed(pkpCombined);
+
+  const allocIstri = Math.round((data.iw / totalIncome) * breakdown.total);
+  const selisihIstri = allocIstri - data.pphWifePaid;
+
+  openSidebar(
+    'Detail Simulasi PH/MT – Istri',
+    `
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 1 – Pendapatan Keluarga</span>
+        <strong>${formatRupiah(totalIncome)}</strong>
+      </div>
+
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 2 – PTKP Gabungan</span>
+        <strong>${formatRupiah(totalPTKP)}</strong>
+      </div>
+
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 3 – PKP Gabungan</span>
+        <strong>${formatRupiah(pkpCombined)}</strong>
+      </div>
+
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 4 – Pajak Gabungan (Tarif Progresif)</span>
+        <p>
+          ${pkpCombined > 0 ? breakdown.html : 'Tidak ada PPh terutang'}
+        </p>
+        <strong style="display:block; margin-top:8px;">
+          Total Pajak Keluarga: ${formatRupiah(breakdown.total)}
+        </strong>
+      </div>
+
+
+      <div class="sidebar-item" style="border-top:2px solid var(--border-soft); margin-top:15px; padding-top:15px;">
+        <span class="sidebar-step-title">Step 5 – Alokasi Proporsional Istri</span>
+        <p>(${formatRupiah(data.iw)} / ${formatRupiah(totalIncome)}) × ${formatRupiah(breakdown.total)}</p>
+        <strong>${formatRupiah(allocIstri)}</strong>
+      </div>
+
+      <div class="sidebar-item">
+        <span class="sidebar-step-title">Step 6 – Selisih Pajak Istri</span>
+        <p>
+          ${formatRupiah(allocIstri)} − ${formatRupiah(data.pphWifePaid)}
+        </p>
+        <strong>${formatRupiah(selisihIstri)}</strong>
+      </div>
+
+    `
+  );
+}
+
+
 
 function showAppreciation(totalTax) {
   document.getElementById('apprTotalTax').innerText = formatRupiah(totalTax);

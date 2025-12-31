@@ -5,22 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator Pajak Suami Istri</title>
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Fade-in animation (AMAN, non-breaking) -->
+  <style>
+    .fade-in {
+      animation: fadeInUp 0.4s ease-out both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Kalkulator Pajak Penghasilan Suami & Istri yang Kerja Kantoran 🏢</h1>
+  <h1>Kalkulator Pajak Penghasilan Pasutri Karyawan 🏢</h1>
 
-  <!-- INPUT -->
+  <!-- ================= INPUT ================= -->
   <div class="grid">
     <div>
-      <label>Penghasilan Neto Suami Setahun (Rp)</label>
-      <input id="incomeHusband" type="text" placeholder="Contoh: 110.000.000" oninput="formatInputRupiah(this)">
+      <label>🤵🏻 Penghasilan Neto Suami (Setahun)</label>
+      <input id="incomeHusband" type="text"
+             placeholder="Contoh: 110.000.000"
+             oninput="formatInputRupiah(this)">
     </div>
 
     <div>
-      <label>Penghasilan Neto Istri Setahun (Rp)</label>
-      <input id="incomeWife" type="text" placeholder="Contoh: 165.000.000"  oninput="formatInputRupiah(this)">
+      <label>👰🏻 Penghasilan Neto Istri (Setahun)</label>
+      <input id="incomeWife" type="text"
+             placeholder="Contoh: 165.000.000"
+             oninput="formatInputRupiah(this)">
     </div>
 
     <div>
@@ -41,77 +56,78 @@
     </div>
   </div>
 
-  <!-- ACTION -->
+  <!-- ================= ACTION ================= -->
   <div class="actions">
     <button onclick="calculate()">Hitung Pajak</button>
   </div>
 
-  <!-- OUTPUT TERPISAH (BASELINE RESULT) -->
-  <div id="output" class="result" style="display:none"></div>
+  <!-- ================= BASELINE RESULT ================= -->
+  <div id="output" class="result fade-in" style="display:none"></div>
 
-  <!-- AWARENESS STATE -->
-  <div id="awareness-card" class="info-card hidden">
+  <!-- ================= AWARENESS CARD ================= -->
+  <div id="awareness-card" class="info-card hidden fade-in">
     <p>
-      Dalam beberapa kondisi, penghitungan pajak secara terpisah antara suami dan istri
-      <strong> berpotensi menimbulkan selisih pajak </strong> saat pelaporan tahunan.
+      Dalam praktiknya, penghitungan pajak suami dan istri secara terpisah
+      <strong>dapat menimbulkan perbedaan angka</strong> saat pelaporan tahunan.
       <br><br>
-      Hal ini bukan kesalahan, melainkan terkait cara penghasilan keluarga diperlakukan
-      dalam peraturan pajak.
+      Ini bukan kesalahan perhitungan, melainkan akibat cara penghasilan keluarga
+      diperlakukan dalam sistem perpajakan.
     </p>
-    <button id="btn-show-explanation" class="link-btn">
-      Lihat kemungkinan dampaknya
+    <button id="btn-show-phmt" class="link-btn">
+      Lihat kemungkinan dampaknya →
     </button>
   </div>
 
-  <!-- EXPLANATION STATE -->
-  <div id="explanation-panel" class="info-card hidden">
+  <!-- ================= PH/MT SIMULATION ================= -->
+  <div id="phmt-wrapper">
+    <table></table>
+  </div>
+
+
+  <!-- ================= EXPLANATION TRIGGER ================= -->
+  <button id="btn-show-explanation"
+          class="link-btn hidden fade-in"
+          style="margin:15px auto; display:block;">
+    Kenapa selisih pajak bisa terjadi?
+  </button>
+
+  <!-- ================= EXPLANATION ================= -->
+  <div id="explanation-panel" class="info-card hidden fade-in">
     <strong>Kenapa selisih pajak bisa terjadi?</strong>
     <p>
-      Walaupun pajak dihitung terpisah, dalam pelaporan tahunan penghasilan suami dan istri
-      dipandang sebagai <strong class="modern-note" data-tooltip="Sesuai UU PPh No. 36 Thn 2008">
-  satu kesatuan keluarga.
-    </strong>
+      Walaupun pajak dihitung secara terpisah, pada tahap pelaporan tahunan
+      penghasilan suami dan istri dipandang sebagai
+      <strong class="modern-note"
+              data-tooltip="Sesuai UU PPh No. 36 Tahun 2008">
+        satu kesatuan keluarga
+      </strong>.
       <br><br>
-      Karena itu, dalam kondisi tertentu, total pajak suami istri bisa berbeda
-      jika dihitung secara gabungan.
+      Dalam kondisi tertentu, pendekatan ini dapat menyebabkan total pajak
+      berbeda dibanding perhitungan terpisah sehari-hari.
     </p>
-    
-    
-
-    <button id="btn-show-phmt" class="primary-btn">
-      Lihat simulasi alokasi pajak keluarga
-    </button>
   </div>
 
-  <!-- PH/MT SIMULATION (HIDDEN BY DEFAULT) -->
-  <div id="phmt-wrapper" class="hidden"></div>
-
-  <!-- TAX PLANNING CTA -->
-  <div id="tax-planning-cta" class="info-card hidden">
-    <strong>Pertimbangkan Opsi Tax Planning</strong>
+  <!-- ================= TAX PLANNING CTA ================= -->
+  <div id="tax-planning-cta" class="info-card hidden fade-in">
+    Ingin meminimalkan potensi selisih pajak?
     <p>
-      Dalam kondisi tertentu, penggabungan NPWP suami dan istri diperbolehkan dan dapat
-      membuat penghitungan pajak keluarga lebih selaras sejak awal.
-      <br><br>
-      Opsi ini sering digunakan agar tidak muncul selisih pajak di akhir tahun,
-      selama sesuai dengan kondisi dan ketentuan yang berlaku.
+      <strong>Penggabungan NPWP suami dan istri</strong> dapat menjadi
+      strategi tax planning yang efisien dan membantu menghindari
+      kurang bayar di akhir tahun.
     </p>
-    <p class="subtext" style="font-style: italic; font-size: 12px; text-align: left; color: var(--text-muted);">
-      *PH = Pisah Harta, MT = Memilih Terpisah
-    </p>
-    <button class="secondary-btn" onclick="window.open('https://www.pajak.go.id/id/artikel/anda-istri-bekerja-begini-konsep-npwp-istri-di-era-coretax', '_blank')">
-  Pelajari opsi penggabungan NPWP
-</button>
+    <button class="secondary-btn"
+      onclick="window.open('https://www.instagram.com/reels/DSHwsmsEpQ3/', '_blank')">
+      Pelajari lebih lanjut tentang penggabungan NPWP
+    </button>
   </div>
 </div>
 
-<!-- FOOTER -->
+<!-- ================= FOOTER ================= -->
 <footer class="site-footer">
-  <strong>Pajak Pasutri</strong> — Feedback
-  <a href="https://www.instagram.com/aufadarmi/" target="_blank">@aufadarmi</a>
+  <strong>Pajak Pasutri</strong> — 2025
 </footer>
 
-<!-- SIDEBAR (SINGLE SOURCE OF TRUTH) -->
+<!-- ================= SIDEBAR ================= -->
 <div id="sidebar" class="sidebar">
   <div class="sidebar-header">
     <h3 id="sidebarTitle">Detail Perhitungan</h3>
@@ -121,7 +137,7 @@
 </div>
 <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-<!-- MODAL APRESIASI -->
+<!-- ================= MODAL APRESIASI ================= -->
 <div id="appreciationModal" class="appr-modal">
   <div class="appr-box">
     <h2>🇮🇩 Terima kasih</h2>

@@ -789,22 +789,19 @@ button:active {
 
 /* Ganti atau tambahkan baris ini di style.css */
 td.clickable {
-  text-align: center; /* Mengubah angka menjadi di tengah */
   cursor: pointer;
   color: var(--primary);
   font-weight: 600;
-  position: relative;
-  transition: all 0.2s ease;
-  text-decoration: underline dotted;
+  text-align: center;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* Efek saat mouse berada di atas angka */
-.clickable:hover {
-  background-color: var(--primary-soft) !important; /* Warna hijau muda transparan */
+/* Hover bersih, TANPA border */
+td.clickable:hover {
+  background-color: var(--primary-soft);
   color: var(--primary-hover);
-  transform: scale(1.02); /* Sedikit membesar */
-  box-shadow: inset 0 0 0 1px var(--primary); /* Border tipis di dalam */
 }
+
 
 /* Animasi sederhana saat diklik */
 .clickable:active {
@@ -1117,7 +1114,7 @@ label {
 .modern-note {
   cursor: help;
   color: var(--primary);
-  text-decoration: underline dotted;
+  text-decoration: ;
   position: relative;
   display: inline-block;
 }
@@ -1165,4 +1162,161 @@ label {
     right: -20px;
     width: 200px;
   }
+}
+
+/* Pastikan header dan isi tabel sejajar di tengah */
+th.centered, td.centered {
+    text-align: center !important;
+    vertical-align: middle;
+}
+
+/* Mengunci lebar kolom agar simetris */
+table {
+    width: 100%;
+    table-layout: fixed; /* Ini kunci agar kolom tidak geser-geser */
+}
+
+/* Kolom pertama (keterangan) dibuat lebih lebar, 
+   kolom angka dibuat sama besar */
+th:first-child, td:first-child {
+    width: 50%;
+    text-align: left;
+}
+
+.col-header.centered, td.clickable.centered {
+    width: 25%;
+}
+
+/* Mengunci layout tabel agar semua kolom memiliki lebar yang sama */
+table {
+  width: 100%;
+  table-layout: fixed; /* Kunci agar kolom atas dan bawah sejajar sempurna */
+  border-collapse: collapse;
+}
+
+/* Kolom Keterangan (kiri) */
+th:first-child, td:first-child {
+  width: 40%; 
+  text-align: left;
+}
+
+/* Kolom Angka (tengah & kanan) */
+.col-header.centered, 
+td.clickable.centered {
+  width: 30%; /* Berikan porsi lebar yang sama persis */
+  text-align: center !important;
+}
+
+
+
+.link-btn {
+  background-color: var(--primary); /* Teal-700 */
+  color: #ffffff !important;
+  border: none;
+  outline: none; /* Menghilangkan border default browser */
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover state yang bersih */
+.link-btn:hover {
+  /* Alih-alih brightness, kita gunakan warna yang sedikit lebih gelap secara manual */
+  background-color: var(--primary-hover); 
+  
+  /* Hilangkan filter brightness yang membuat warna memutih */
+  filter: none; 
+  
+  /* Shadow lembut tanpa garis hitam */
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3); 
+  
+  transform: translateY(-1px);
+}
+
+/* Menangani focus agar tidak muncul garis hitam/biru saat diklik */
+.link-btn:focus {
+  outline: none;
+  border: none;
+  box-shadow: 0 0 0 3px var(--primary-soft); /* Highlight teal lembut sebagai ganti garis hitam */
+}
+
+
+td.clickable.centered:hover {
+  background-color: var(--primary-soft); /* Warna hijau sangat muda */
+  box-shadow: inset 0 0 0 1px var(--primary); /* Border di dalam sel */
+  border-radius: 4px;
+}
+
+.link-btn {
+  background-color: var(--primary); /* Teal tua */
+  color: #ffffff !important; /* WAJIB PUTIH agar terbaca */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Fade-in ringan, aman untuk JS */
+.fade-in {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   RISK INDICATOR – POTENSI KURANG BAYAR
+================================ */
+
+/* Header */
+th.risk-header {
+  color: #b45309;
+  font-weight: 600;
+}
+
+/* Amount – FORCE override clickable */
+td.clickable.risk-amount {
+  color: #b45309 !important;
+  font-weight: 600;
+  position: relative;
+}
+
+/* Warning icon */
+td.clickable.risk-amount::before {
+  content: "⚠️";
+  font-size: 12px;
+  margin-right: 6px;
+}
+
+/* Hover edukatif */
+td.clickable.risk-amount:hover {
+  background: rgba(251, 191, 36, 0.12);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Soft pulse */
+@keyframes softPulse {
+  0% { box-shadow: 0 0 0 0 rgba(251,191,36,0.35); }
+  70% { box-shadow: 0 0 0 6px rgba(251,191,36,0); }
+  100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+}
+
+td.clickable.risk-amount {
+  animation: softPulse 2.5s ease-out infinite;
 }
