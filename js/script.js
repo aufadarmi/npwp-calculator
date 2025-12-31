@@ -282,7 +282,7 @@ function showDetailPHMTSuami() {
   const selisihSuami = allocSuami - data.pphHusbandPaid;
 
   openSidebar(
-    'Detail Simulasi PH/MT – Suami',
+    'Detail Simulasi Pajak Gabungan – Suami',
     `
       <div class="sidebar-item">
         <span class="sidebar-step-title">Step 1 – Pendapatan Keluarga</span>
@@ -305,7 +305,7 @@ function showDetailPHMTSuami() {
           ${pkpCombined > 0 ? breakdown.html : 'Tidak ada PPh terutang'}
         </p>
         <strong style="display:block; margin-top:8px;">
-          Total Pajak Keluarga: ${formatRupiah(breakdown.total)}
+          Total Pajak Gabungan: ${formatRupiah(breakdown.total)}
         </strong>
       </div>
 
@@ -341,7 +341,7 @@ function showDetailPHMTIstri() {
   const selisihIstri = allocIstri - data.pphWifePaid;
 
   openSidebar(
-    'Detail Simulasi PH/MT – Istri',
+    'Detail Simulasi Pajak Gabungan – Istri',
     `
       <div class="sidebar-item">
         <span class="sidebar-step-title">Step 1 – Pendapatan Keluarga</span>
@@ -364,7 +364,7 @@ function showDetailPHMTIstri() {
           ${pkpCombined > 0 ? breakdown.html : 'Tidak ada PPh terutang'}
         </p>
         <strong style="display:block; margin-top:8px;">
-          Total Pajak Keluarga: ${formatRupiah(breakdown.total)}
+          Total Pajak Gabungan: ${formatRupiah(breakdown.total)}
         </strong>
       </div>
 

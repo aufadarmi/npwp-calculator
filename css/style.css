@@ -1320,3 +1320,16 @@ td.clickable.risk-amount:hover {
 td.clickable.risk-amount {
   animation: softPulse 2.5s ease-out infinite;
 }
+
+
+/* Warna khusus untuk selisih/kurang bayar di sidebar */
+.text-amber {
+  color: #b45309 !important; /* Warna Amber/Cokelat Keemasan */
+  font-size: 18px !important; /* Sedikit lebih besar agar menonjol */
+}
+
+/* Opsional: Beri background soft amber pada box step 6 agar lebih kontras */
+.text-amber.parent-item {
+  background-color: #fffbeb;
+  border-left: 3px solid #f59e0b;
+}
