@@ -3,162 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalkulator Pajak Suami Istri</title>
+  <title>Kalkulator Pajak Penghasilan Pasutri</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-
-  <!-- Fade-in animation (AMAN, non-breaking) -->
-  <style>
-    .fade-in {
-      animation: fadeInUp 0.4s ease-out both;
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Kalkulator Pajak Penghasilan Pasutri Karyawan 🏢</h1>
-
-  <!-- ================= INPUT ================= -->
-  <div class="grid">
-    <div>
-      <label>🤵🏻 Penghasilan Neto Suami (Setahun)</label>
-      <input id="incomeHusband" type="text"
-             placeholder="Contoh: 110.000.000"
-             oninput="formatInputRupiah(this)">
-    </div>
-
-    <div>
-      <label>👰🏻 Penghasilan Neto Istri (Setahun)</label>
-      <input id="incomeWife" type="text"
-             placeholder="Contoh: 165.000.000"
-             oninput="formatInputRupiah(this)">
-    </div>
-
-    <div>
-      <label>Status PTKP Suami</label>
-      <select id="ptkpHusband">
-        <option value="58500000">K/0 (58.500.000)</option>
-        <option value="63000000">K/1 (63.000.000)</option>
-        <option value="67500000">K/2 (67.500.000)</option>
-        <option value="72000000">K/3 (72.000.000)</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Status PTKP Istri</label>
-      <div class="fixed-select">TK/0 (54.000.000)</div>
-      <input type="hidden" id="ptkpWife" value="54000000">
-      <small class="note">ℹ️ PTKP istri menikah selalu TK/0</small>
-    </div>
-  </div>
-
-  <!-- ================= ACTION ================= -->
-  <div class="actions">
-    <button onclick="calculate()">Hitung Pajak</button>
-  </div>
-
-  <!-- ================= BASELINE RESULT ================= -->
-  <div id="output" class="result fade-in" style="display:none"></div>
-
-  <!-- ================= AWARENESS CARD ================= -->
-  <div id="awareness-card" class="info-card hidden fade-in">
-    <p>
-      Dalam praktiknya, penghitungan pajak suami dan istri secara terpisah
-      <strong>dapat menimbulkan perbedaan angka</strong> saat pelaporan tahunan.
-      <br><br>
-      Walaupun pajak dihitung secara terpisah, pada tahap pelaporan tahunan
-      penghasilan suami dan istri dipandang sebagai
-      <strong class="modern-note"
-              data-tooltip="Sesuai UU PPh No. 36 Tahun 2008">
-        satu kesatuan ekonomi
-      </strong>.
-    </p>
-    <button id="btn-show-phmt" class="link-btn">
-      Lihat kemungkinan dampaknya →
-    </button>
-  </div>
-
-  <!-- ================= PH/MT SIMULATION ================= -->
-  <div id="phmt-wrapper">
-    <table></table>
-  </div>
-
-
-  <!-- ================= EXPLANATION TRIGGER ================= -->
-  <button id="btn-show-explanation"
-          class="link-btn hidden fade-in"
-          style="margin:15px auto; display:block;">
-    Kenapa selisih pajak bisa terjadi?
-  </button>
-
-  <!-- ================= EXPLANATION ================= -->
-  <div id="explanation-panel" class="info-card hidden fade-in">
-    <strong>Kenapa selisih pajak bisa terjadi?</strong>
-    <p>
-      Walaupun pajak dihitung secara terpisah, pada tahap pelaporan tahunan
-      penghasilan suami dan istri dipandang sebagai
-      <strong class="modern-note"
-              data-tooltip="Sesuai UU PPh No. 36 Tahun 2008">
-        satu kesatuan keluarga
-      </strong>.
-      <br><br>
-      Dalam kondisi tertentu, pendekatan ini dapat menyebabkan total pajak
-      berbeda dibanding perhitungan terpisah sehari-hari.
-    </p>
-  </div>
-
-  <!-- ================= TAX PLANNING CTA ================= -->
-  <div id="tax-planning-cta" class="info-card hidden fade-in">
-    
-    <p>
-      <strong>Penggabungan NPWP suami dan istri</strong> dapat menjadi
-      alternatif untuk  membantu menghindari
-      kurang bayar di akhir tahun.
-    </p>
-    <button class="secondary-btn"
-      onclick="window.open('https://www.instagram.com/reels/DSHwsmsEpQ3/', '_blank')">
-      Pelajari lebih lanjut tentang penggabungan NPWP
-    </button>
+<div class="app-header">
+  <div class="brand">
+    <span class="brand-badge">Simulasi PPh 21</span>
+    <h1>Kalkulator Pajak Suami Istri</h1>
+    <p class="subtitle">Hitung estimasi pajak terpisah dan analisis potensi selisih kurang bayar saat pelaporan SPT Tahunan.</p>
   </div>
 </div>
 
-<!-- ================= FOOTER ================= -->
+<main class="container">
+  <!-- INPUT SECTION -->
+  <section class="card input-card">
+    <h2 class="card-title">Data Penghasilan & Status PTKP</h2>
+    
+    <div class="grid">
+      <div class="form-group">
+        <label for="incomeHusband">Penghasilan Neto Suami (Setahun)</label>
+        <div class="input-wrapper">
+          <span class="currency-prefix">Rp</span>
+          <input id="incomeHusband" type="text" placeholder="0" oninput="formatInputRupiah(this)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="incomeWife">Penghasilan Neto Istri (Setahun)</label>
+        <div class="input-wrapper">
+          <span class="currency-prefix">Rp</span>
+          <input id="incomeWife" type="text" placeholder="0" oninput="formatInputRupiah(this)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ptkpHusband">Status PTKP Suami</label>
+        <select id="ptkpHusband">
+          <option value="58500000">K/0 — Rp 58.500.000</option>
+          <option value="63000000">K/1 — Rp 63.000.000</option>
+          <option value="67500000">K/2 — Rp 67.500.000</option>
+          <option value="72000000">K/3 — Rp 72.000.000</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Status PTKP Istri</label>
+        <div class="fixed-select">TK/0 — Rp 54.000.000</div>
+        <input type="hidden" id="ptkpWife" value="54000000">
+        <span class="note">Ketentuan UU PPh: PTKP istri bekerja/menikah ditetapkan TK/0.</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="calculate()">Hitung Estimasi Pajak</button>
+    </div>
+  </section>
+
+  <!-- BASELINE RESULT -->
+  <section id="output" class="card result-card hidden fade-in"></section>
+
+  <!-- AWARENESS CARD -->
+  <section id="awareness-card" class="card info-card hidden fade-in">
+    <div class="info-header">
+      <span class="badge-warning">Perhatian Pelaporan SPT</span>
+      <h3>Status Perpajakan & Kesatuan Ekonomi</h3>
+    </div>
+    <p>
+      Sesuai UU PPh, penghasilan suami dan istri dipandang sebagai <strong>satu kesatuan ekonomi</strong> saat pelaporan tahunan. Perhitungan terpisah bulanan dapat memicu adanya <strong>selisih kurang bayar</strong> di akhir tahun.
+    </p>
+    <button id="btn-show-phmt" class="btn-secondary">
+      Simulasikan Dampak Kurang Bayar (PH/MT) &rarr;
+    </button>
+  </section>
+
+  <!-- PH/MT SIMULATION RESULT -->
+  <section id="phmt-wrapper" class="card phmt-card hidden fade-in"></section>
+
+  <!-- TAX PLANNING CTA -->
+  <section id="tax-planning-cta" class="card cta-card hidden fade-in">
+    <div class="cta-content">
+      <h4>Ingin Menghindari Kurang Bayar Setiap Tahun?</h4>
+      <p>Penggabungan NPWP suami dan istri dapat menjadi solusi administratif resmi untuk menyederhanakan pelaporan pajak keluarga.</p>
+    </div>
+    <a href="https://www.instagram.com/reels/DSHwsmsEpQ3/" target="_blank" rel="noopener" class="btn-outline">
+      Pelajari Penggabungan NPWP
+    </a>
+  </section>
+</main>
+
 <footer class="site-footer">
-  <strong>Pajak Pasutri</strong> — 2025
+  <p>&copy; 2025 <strong>Pajak Pasutri</strong> &bull; Media Edukasi Perpajakan Keluarga Indonesia</p>
 </footer>
 
-<!-- ================= SIDEBAR ================= -->
+<!-- SIDEBAR OVERLAY -->
 <div id="sidebar" class="sidebar">
   <div class="sidebar-header">
-    <h3 id="sidebarTitle">Detail Perhitungan</h3>
-    <button onclick="closeSidebar()">✕</button>
+    <h3 id="sidebarTitle">Rincian Perhitungan</h3>
+    <button class="btn-close" onclick="closeSidebar()">&times;</button>
   </div>
   <div id="sidebarContent" class="sidebar-content"></div>
 </div>
 <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-
-<!-- ================= MODAL APRESIASI ================= -->
-<div id="appreciationModal" class="appr-modal">
-  <div class="appr-box">
-    <h2>🇮🇩 Terima kasih</h2>
-    <p>Total kontribusi pajak keluarga kamu</p>
-    <div class="appr-amount">
-      <strong id="apprTotalTax">Rp 0</strong>
-    </div>
-    <div class="appr-funfact">
-      <div class="appr-icon">🍱</div>
-      <div>
-        <strong id="funfactTitle"></strong>
-        <p id="funfactDesc"></p>
-      </div>
-    </div>
-    <button onclick="closeAppreciation()">Lihat Hasil</button>
-  </div>
-</div>
 
 <script src="js/script.js"></script>
 </body>

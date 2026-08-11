@@ -1,1335 +1,344 @@
 /* ======================================================
-   THEME VARIABLES (Green–Teal Professional)
+   DESIGN SYSTEM & VARIABLES
 ====================================================== */
 :root {
-  --primary: #0f766e;        /* teal-700 */
-  --primary-hover: #115e59;  /* teal-800 */
-  --primary-soft: #ccfbf1;   /* teal-100 */
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  --primary: #0f766e;
+  --primary-hover: #115e59;
+  --primary-light: #f0fdfa;
+  --primary-border: #ccfbf1;
 
-  --text-dark: #1f2937;
-  --text-muted: #6b7280;
-  --border-soft: #e5e7eb;
+  --warning-bg: #fffbeb;
+  --warning-border: #fef3c7;
+  --warning-text: #b45309;
 
-  --bg-page: #f5f7fa;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-white: #ffffff;
+
+  --bg-body: #f8fafc;
   --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05);
 }
 
-/* ======================================================
-   BASE
-====================================================== */
-body {
-  font-family: Inter, Arial, sans-serif;
-  background: var(--bg-page);
+* {
+  box-sizing: border-box;
   margin: 0;
-  color: var(--text-dark);
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.6;
+  padding-bottom: 60px;
 }
 
 /* ======================================================
-   MAIN CONTAINER
+   HEADER & CONTAINER
 ====================================================== */
-.container {
-  max-width: 900px;
-  margin: 40px auto;
+.app-header {
   background: var(--bg-card);
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border-bottom: 1px solid var(--border-color);
+  padding: 40px 20px;
+  text-align: center;
 }
 
-/* ======================================================
-   HEADER / TITLE
-====================================================== */
-h1 {
-  font-size: 24px;
-  margin-bottom: 8px;
-  padding-left: 14px;
-  border-left: 6px solid var(--primary);
+.brand {
+  max-width: 680px;
+  margin: 0 auto;
 }
 
-.subtitle {
-  color: var(--text-muted);
-  margin-bottom: 24px;
-}
-
-/* ======================================================
-   FORM GRID
-====================================================== */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-input,
-select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 2px solid #d1d5db;
-  font-size: 14px;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  border-color: var(--primary);
-}
-
-/* ======================================================
-   FIXED SELECT (READ ONLY FIELD)
-====================================================== */
-.fixed-select {
-  padding: 10px 12px;
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
-  background: #f9fafb;
-  font-size: 14px;
-  color: #374151;
-}
-
-/* ======================================================
-   NOTE / HELPER TEXT
-====================================================== */
-.note {
-  display: block;
-  margin-top: 6px;
+.brand-badge {
+  display: inline-block;
   font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* ======================================================
-   ACTIONS / BUTTON
-====================================================== */
-.actions {
-  margin-top: 24px;
-  text-align: center;
-}
-
-button {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-th.col-header {
-  text-align: center;
-  font-weight: 600;
-}
-
-
-button:hover {
-  background: var(--primary-hover);
-}
-
-/* ======================================================
-   RESULT BOX
-====================================================== */
-.result {
-  margin-top: 32px;
-  background: #f9fafb;
-  padding: 24px;
-  border-radius: 10px;
-}
-
-.result h2 {
-  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 12px;
+  border-radius: 99px;
   margin-bottom: 12px;
 }
 
-/* ======================================================
-   TABLE
-====================================================== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-th,
-td {
-  padding: 10px;
-  border-bottom: 1px solid var(--border-soft);
-  text-align: right;
-}
-
-th {
-  text-align: left;
-  color: #374151;
-}
-
-/* ======================================================
-   CLICKABLE / INTERACTIVE NUMBER
-====================================================== */
-.clickable {
-  cursor: pointer;
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.centered {
-  text-align: center;
-}
-
-
-.clickable:hover {
-  text-decoration: underline;
-}
-
-/* ======================================================
-   TOOLTIP
-====================================================== */
-.tooltip {
-  position: relative;
-  cursor: help;
-  border-bottom: 1px dashed #555;
-}
-
-.tooltip::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: 50%;
-  bottom: 120%;
-  transform: translateX(-50%);
-  background: #222;
-  color: #fff;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: pre-line;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  max-width: 260px;
-  z-index: 10;
-}
-
-.tooltip:hover::after {
-  opacity: 1;
-}
-
-/* ======================================================
-   THEME VARIABLES (Green–Teal Professional)
-====================================================== */
-:root {
-  --primary: #0f766e;        /* teal-700 */
-  --primary-hover: #115e59;  /* teal-800 */
-  --primary-soft: #f0fdfa;   /* teal-50 */
-  --primary-border: #ccfbf1; /* teal-100 */
-
-  --text-dark: #111827;      /* gray-900 */
-  --text-main: #374151;      /* gray-700 */
-  --text-muted: #6b7280;     /* gray-500 */
-  
-  --border-soft: #e5e7eb;    /* gray-200 */
-  --bg-page: #f8fafc;        /* slate-50 */
-  --bg-card: #ffffff;
-  
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-/* ======================================================
-   BASE & RESET
-====================================================== */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--bg-page);
-  margin: 0;
+.brand h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text-main);
-  line-height: 1.5;
-}
-
-/* ======================================================
-   MAIN CONTAINER
-====================================================== */
-.container {
-  max-width: 850px;
-  margin: 60px auto;
-  background: var(--bg-card);
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
-}
-
-h1 {
-  font-size: 26px;
-  color: var(--text-dark);
   margin-bottom: 8px;
-  padding-left: 16px;
-  border-left: 5px solid var(--primary);
-  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.container {
+  max-width: 760px;
+  margin: -20px auto 0 auto;
+  padding: 0 20px;
 }
 
 /* ======================================================
-   FORM ELEMENTS
+   CARDS & GRID
 ====================================================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text-main);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 28px;
-  margin-top: 32px;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
 }
 
 label {
-  display: block;
+  font-size: 13px;
   font-weight: 600;
+  color: var(--text-main);
   margin-bottom: 8px;
-  font-size: 14px;
-  color: var(--text-dark);
 }
 
-input, select, .fixed-select {
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-prefix {
+  position: absolute;
+  left: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+input[type="text"], select, .fixed-select {
   width: 100%;
-  height: 44px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border-soft);
-  font-size: 15px;
+  height: 46px;
+  padding: 10px 14px 10px 40px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-main);
   background: #fff;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+}
+
+select {
+  padding-left: 14px;
+}
+
+.fixed-select {
+  padding-left: 14px;
+  background: #f1f5f9;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  border-color: var(--border-color);
 }
 
 input:focus, select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-soft);
-}
-
-.fixed-select {
-  background: #f3f4f6;
-  color: var(--text-muted);
-  border-color: var(--border-soft);
-  cursor: not-allowed;
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .note {
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--text-muted);
   margin-top: 6px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 /* ======================================================
    BUTTONS
 ====================================================== */
 .actions {
-  margin-top: 32px;
-  text-align: center;
+  margin-top: 28px;
 }
 
-button.primary-btn, .actions button {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  padding: 14px 32px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s, background 0.2s;
-  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
-}
-
-button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-.secondary-btn {
-  background: #f3f4f6;
-  color: var(--text-dark);
-  border: 1px solid var(--border-soft);
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
+.btn-primary {
   width: 100%;
-}
-
-.link-btn {
-  background: none;
+  height: 48px;
+  background: var(--primary);
+  color: var(--text-white);
   border: none;
-  color: var(--primary);
-  font-weight: 600;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
-}
-
-/* ======================================================
-   MODERN SIDEBAR (REVISED UI/UX)
-====================================================== */
-.sidebar {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  bottom: 15px;
-  width: 420px;
-  max-width: calc(100% - 30px);
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: -15px 0 50px rgba(0,0,0,0.1);
-  transform: translateX(120%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 1001;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--border-soft);
-}
-
-.sidebar.active {
-  transform: translateX(0);
-}
-
-.sidebar-header {
-  padding: 24px 28px;
-  background: #fff;
-  border-bottom: 1px solid var(--border-soft);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.sidebar-header h3 {
-  margin: 0;
-  font-size: 18px;
-  color: var(--text-dark);
-  font-weight: 700;
-}
-
-.sidebar-header button {
-  background: #f3f4f6;
-  color: var(--text-muted);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.sidebar-content {
-  padding: 28px;
-  overflow-y: auto;
-  flex-grow: 1;
-}
-
-/* Grouping inside sidebar for clarity */
-.detail-step {
-  background: var(--bg-page);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border-soft);
-}
-
-.detail-step strong {
-  display: block;
-  font-size: 13px;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-}
-
-.detail-step p {
-  margin: 0;
+  border-radius: var(--radius-md);
   font-size: 15px;
-  color: var(--text-dark);
-}
-
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.3);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: none;
-}
-
-.sidebar-overlay.active {
-  display: block;
-}
-
-/* ======================================================
-   RESULT CARDS
-====================================================== */
-.result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 24px;
-}
-
-.status-card {
-  background: #fff;
-  border: 1px solid var(--border-soft);
-  border-radius: 16px;
-  padding: 24px;
-  transition: all 0.2s;
-  cursor: pointer;
-  position: relative;
-}
-
-.status-card:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-.status-card::before {
-  content: "";
-  position: absolute;
-  left: 0; top: 24px; bottom: 24px;
-  width: 4px;
-  background: var(--primary);
-  border-radius: 0 4px 4px 0;
-}
-
-.card-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.amount-val {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text-dark);
-}
-
-/* ======================================================
-   APPRECIATION MODAL
-====================================================== */
-.appr-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.appr-modal.active {
-  display: flex;
-}
-
-.appr-box {
-  background: #fff;
-  border-radius: 24px;
-  padding: 40px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-}
-
-.appr-amount {
-  margin: 24px 0;
-  padding: 20px;
-  background: var(--primary-soft);
-  border-radius: 16px;
-  border: 1px solid var(--primary-border);
-}
-
-.appr-amount strong {
-  font-size: 26px;
-  color: var(--primary);
-}
-
-/* ======================================================
-   FOOTER
-====================================================== */
-.site-footer {
-  text-align: center;
-  padding: 40px 0;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-.site-footer a {
-  color: var(--primary);
-  text-decoration: none;
   font-weight: 600;
-}
-
-/* ======================================================
-   UTILITIES
-====================================================== */
-.hidden { display: none !important; }
-
-.info-card {
-  margin-top: 24px;
-  padding: 24px;
-  border-radius: 16px;
-  background: #fff;
-  border: 1px solid var(--border-soft);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .grid, .result-grid { grid-template-columns: 1fr; }
-  .container { padding: 24px; margin: 20px 15px; }
-  .sidebar { width: 100%; right: 0; top: auto; bottom: 0; height: 80vh; border-radius: 24px 24px 0 0; }
-}
-
-/* Overlay */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: none;
-  z-index: 1000;
-}
-
-.sidebar-overlay.active {
-  display: block;
-}
-
-/* ======================================================
-   FOOTER
-====================================================== */
-.site-footer {
-  text-align: center;
-  padding: 20px 10px;
-  font-size: 13px;
-  color: var(--text-muted);
-  background: var(--primary-soft);
-  border-top: 1px solid var(--border-soft);
-}
-
-/* ======================================================
-   RESPONSIVE
-====================================================== */
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ================= APRESIASI MODAL ================= */
-.appr-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.appr-modal.active {
-  display: flex;
-}
-
-.appr-box {
-  background: #fff;
-  border-radius: 14px;
-  padding: 28px;
-  max-width: 420px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
-
-.appr-box h2 {
-  margin-top: 0;
-}
-
-.appr-amount {
-  margin: 20px 0;
-  padding: 16px;
-  background: #f0fdfa;
-  border-radius: 10px;
-}
-
-.appr-amount strong {
-  display: block;
-  font-size: 22px;
-  margin-top: 6px;
-  color: #0f766e;
-}
-
-.appr-funfact {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  background: #f9fafb;
-  padding: 14px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.appr-icon {
-  font-size: 28px;
-}
-
-.appr-actions button {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.appr-actions .secondary {
-  background: #e5e7eb;
-  color: #111827;
-}
-.hidden {
-  display: none !important;
-}
-
-.result-section {
-  margin-top: 24px;
-}
-
-.info-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
-  border: 1px solid var(--border-soft);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-}
-
-.info-card.warning {
-  border-left: 6px solid #f59e0b;
-  background: #fffbeb;
-}
-
-.amount {
-  font-size: 22px;
-  font-weight: 700;
-  margin: 12px 0;
-  color: #b45309;
-}
-
-
-.primary-btn {
-  width: 100%;
-  margin-top: 16px;
-  background: var(--primary);
-  color: #fff;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  border: none;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.primary-btn:hover {
+.btn-primary:hover {
   background: var(--primary-hover);
 }
 
-
-.subtext {
-  margin-top: 10px;
-  font-size: 13px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-.detail-link {
-  margin-top: 14px;
+.btn-secondary {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
   font-size: 14px;
-}
-
-.detail-link .link {
-  color: var(--primary);
   font-weight: 600;
   cursor: pointer;
-}
-
-.detail-link .link:hover {
-  text-decoration: underline;
-}
-
-
-/* ===================== FEEDBACK VISUAL & HOVER ===================== */
-
-/* Menandakan cell bisa diklik */
-.clickable {
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-  color: var(--primary); /* Menggunakan warna teal agar terlihat seperti link */
-  font-weight: 600;
-  text-decoration: underline dotted; /* Memberi kesan 'ada info tambahan' */
-}
-
-/* Ganti atau tambahkan baris ini di style.css */
-td.clickable {
-  cursor: pointer;
-  color: var(--primary);
-  font-weight: 600;
-  text-align: center;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-/* Hover bersih, TANPA border */
-td.clickable:hover {
-  background-color: var(--primary-soft);
-  color: var(--primary-hover);
-}
-
-
-/* Animasi sederhana saat diklik */
-.clickable:active {
-  transform: scale(0.98);
-}
-
-/* Highlight Baris Tabel */
-table tr:hover td {
-  background-color: #fcfdfd;
-}
-
-/* Tooltip sederhana (Opsional) */
-.clickable::after {
-  content: "Klik untuk melihat penjelasan";
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #374151;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-
-.clickable:hover::after {
-  opacity: 1;
-}
-
-/* ===================== SIDEBAR INTERACTION ===================== */
-
-/* Bungkus untuk setiap baris rincian di sidebar */
-.sidebar-item {
-  padding: 10px;
-  margin: 4px -10px; /* Menarik sedikit ke pinggir agar area hover luas */
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-}
-
-
-/* Efek Hover di dalam Sidebar */
-.sidebar-item:hover {
-  background-color: var(--primary-soft);
-  border-left: 3px solid var(--primary);
-  padding-left: 15px; /* Efek bergeser sedikit ke kanan */
-  cursor: default;
-}
-
-/* Mempertegas angka saat di-hover */
-.sidebar-item:hover strong {
-  color: var(--primary-hover);
-}
-
-/* Gaya tambahan untuk judul step di sidebar */
-.sidebar-step-title {
-  display: block;
-  font-weight: bold;
   margin-top: 16px;
-  margin-bottom: 8px;
-  color: var(--text-dark);
-  border-bottom: 1px solid var(--border-soft);
-  padding-bottom: 4px;
 }
 
-/* 1. Tambahkan ini di bagian paling atas CSS Anda (Base) */
-* {
-  box-sizing: border-box; /* Memastikan padding & border dihitung di dalam lebar elemen */
-}
-
-/* 2. Samakan ketebalan border agar identik */
-input,
-select,
-.fixed-select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 2px solid #d1d5db; /* Samakan semua jadi 2px atau 1px */
-  font-size: 14px;
-  height: 42px; /* Memberikan tinggi yang seragam untuk semua field */
-  display: flex;
-  align-items: center;
-}
-
-/* 3. Atur Label agar konsisten */
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 14px;
-  min-height: 20px; /* Menjaga jarak jika teks label berbeda panjangnya */
-}
-
-/* ===================== MODERN RESULT CARDS ===================== */
-
-/* Container Utama Hasil */
-.result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-/* Base Card Style */
-.status-card {
-  background: #fff;
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  padding: 24px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  position: relative;
-  overflow: hidden;
-}
-
-.status-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-}
-
-.status-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; width: 4px; height: 100%;
-  background: var(--primary);
-}
-
-/* Judul Kartu */
-.card-label {
-  display: block;
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 700;
-}
-
-/* Group Angka */
-.amount-group {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.amount-item {
-  flex: 1;
-}
-
-.amount-val {
-  display: block;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--primary);
-  margin-top: 4px;
-}
-
-.clickable-hint {
-  font-size: 11px;
-  color: var(--primary);
-  text-decoration: underline dotted;
-  cursor: pointer;
-  margin-top: 8px;
+.btn-outline {
   display: inline-block;
-}
-
-/* Responsive Grid */
-@media (max-width: 600px) {
-  .result-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.hidden {
-  display: none !important;
-}
-
-.info-card {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 10px;
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
-}
-
-.link-btn {
-  background: none;
-  border: none;
-  color: #0f766e;
-  padding: 0;
-  margin-top: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.primary-btn {
-  margin-top: 12px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  background: #0f766e;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.secondary-btn {
-  margin-top: 12px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  background: #e5f3f1;
-  color: #065f46;
-  border: none;
-  cursor: pointer;
-}
-
-/* Update di style.css */
-
-.link-btn {
-  background: none;
-  border: none;
-  color: var(--primary);
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
-  font-weight: 600;
-}
-
-.secondary-btn {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid var(--border-soft);
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
-  font-weight: 600;
-}
-
-.secondary-btn:hover {
-  background: #e5e7eb;
-}
-
-
-/* Seragamkan semua teks di dalam sidebar content */
-.sidebar-content {
-  padding: 20px;
-  overflow-y: auto;
-  font-size: 15px; /* Ukuran dasar teks */
-  line-height: 1.6;
-  color: var(--text-dark);
-}
-
-/* Seragamkan semua angka/teks tebal di dalam sidebar */
-.sidebar-content strong {
-  font-size: 15px; /* Samakan dengan teks biasa agar tidak jomplang */
-  font-weight: 700;
-  color: var(--primary); /* Memberi warna khas pada angka hasil */
-}
-
-/* Khusus untuk judul step agar tetap tegas tapi proporsional */
-.sidebar-step-title {
-  display: block;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-  color: var(--text-muted);
-} 
-
-/* Styling untuk rincian per baris di sidebar */
-.sidebar-item {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-soft);
-}
-
-.sidebar-item:last-child {
-  border-bottom: none;
-}
-
-/* Judul kecil di atas angka */
-.sidebar-step-title {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
-}
-
-/* Penyelarasan paragraf keterangan di sidebar */
-.sidebar-item p {
-  margin: 4px 0;
+  border: 1.5px solid var(--border-color);
+  background: transparent;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
   font-size: 14px;
+  font-weight: 600;
   color: var(--text-main);
+  text-decoration: none;
+  text-align: center;
 }
 
-/* Penyelarasan angka tebal di sidebar */
-.sidebar-item strong {
-  font-size: 15px; /* Sesuai permintaan: ukuran font angka sama */
+.btn-outline:hover {
+  border-color: var(--primary);
   color: var(--primary);
-  display: block;
-}
-/* Container Utama */
-.modern-note {
-  cursor: help;
-  color: var(--primary);
-  text-decoration: ;
-  position: relative;
-  display: inline-block;
 }
 
-/* Kotak Informasi Minimalis */
-.modern-note::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 125%;
-  left: 0; /* Rata kiri agar lebih rapi daripada rata tengah */
-  
-  /* Styling Minimalis */
-  background: #ffffff;
-  color: #4b5563;
-  width: 240px; /* Ukuran lebih kecil/compact */
-  padding: 10px 14px;
-  font-size: 12px;
-  line-height: 1.5;
-  border-radius: 8px;
-  
-  /* Aksen Garis Samping (Kreatif & Menarik) */
-  border-left: 4px solid var(--primary);
-  
-  /* Shadow Halus */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  
-  /* Animasi Transparan Ke Muncul */
-  z-index: 100;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.2s ease-in-out;
-}
-
-/* Hover State */
-.modern-note:hover::after {
-  opacity: 1;
-  visibility: visible;
-  bottom: 150%; /* Efek melayang sedikit saat muncul */
-}
-
-/* Penyesuaian untuk layar HP agar tidak keluar layar */
-@media (max-width: 480px) {
-  .modern-note::after {
-    left: auto;
-    right: -20px;
-    width: 200px;
-  }
-}
-
-/* Pastikan header dan isi tabel sejajar di tengah */
-th.centered, td.centered {
-    text-align: center !important;
-    vertical-align: middle;
-}
-
-/* Mengunci lebar kolom agar simetris */
-table {
-    width: 100%;
-    table-layout: fixed; /* Ini kunci agar kolom tidak geser-geser */
-}
-
-/* Kolom pertama (keterangan) dibuat lebih lebar, 
-   kolom angka dibuat sama besar */
-th:first-child, td:first-child {
-    width: 50%;
-    text-align: left;
-}
-
-.col-header.centered, td.clickable.centered {
-    width: 25%;
-}
-
-/* Mengunci layout tabel agar semua kolom memiliki lebar yang sama */
-table {
+/* ======================================================
+   RESULTS & TABLES
+====================================================== */
+.result-table {
   width: 100%;
-  table-layout: fixed; /* Kunci agar kolom atas dan bawah sejajar sempurna */
   border-collapse: collapse;
 }
 
-/* Kolom Keterangan (kiri) */
-th:first-child, td:first-child {
-  width: 40%; 
+.result-table th, .result-table td {
+  padding: 14px 16px;
+  text-align: right;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.result-table th:first-child, .result-table td:first-child {
   text-align: left;
-}
-
-/* Kolom Angka (tengah & kanan) */
-.col-header.centered, 
-td.clickable.centered {
-  width: 30%; /* Berikan porsi lebar yang sama persis */
-  text-align: center !important;
-}
-
-
-
-.link-btn {
-  background-color: var(--primary); /* Teal-700 */
-  color: #ffffff !important;
-  border: none;
-  outline: none; /* Menghilangkan border default browser */
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* Hover state yang bersih */
-.link-btn:hover {
-  /* Alih-alih brightness, kita gunakan warna yang sedikit lebih gelap secara manual */
-  background-color: var(--primary-hover); 
-  
-  /* Hilangkan filter brightness yang membuat warna memutih */
-  filter: none; 
-  
-  /* Shadow lembut tanpa garis hitam */
-  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3); 
-  
-  transform: translateY(-1px);
-}
-
-/* Menangani focus agar tidak muncul garis hitam/biru saat diklik */
-.link-btn:focus {
-  outline: none;
-  border: none;
-  box-shadow: 0 0 0 3px var(--primary-soft); /* Highlight teal lembut sebagai ganti garis hitam */
-}
-
-
-td.clickable.centered:hover {
-  background-color: var(--primary-soft); /* Warna hijau sangat muda */
-  box-shadow: inset 0 0 0 1px var(--primary); /* Border di dalam sel */
-  border-radius: 4px;
-}
-
-.link-btn {
-  background-color: var(--primary); /* Teal tua */
-  color: #ffffff !important; /* WAJIB PUTIH agar terbaca */
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-
-/* Fade-in ringan, aman untuk JS */
-.fade-in {
-  animation: fadeInUp 0.4s ease-out both;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===============================
-   RISK INDICATOR – POTENSI KURANG BAYAR
-================================ */
-
-/* Header */
-th.risk-header {
-  color: #b45309;
   font-weight: 600;
 }
 
-/* Amount – FORCE override clickable */
-td.clickable.risk-amount {
-  color: #b45309 !important;
-  font-weight: 600;
-  position: relative;
-}
-
-/* Warning icon */
-td.clickable.risk-amount::before {
-  content: "⚠️";
+.result-table th {
+  color: var(--text-muted);
   font-size: 12px;
-  margin-right: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Hover edukatif */
-td.clickable.risk-amount:hover {
-  background: rgba(251, 191, 36, 0.12);
-  border-radius: 6px;
+.clickable-val {
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+.clickable-val:hover {
+  background: var(--primary-light);
+}
+
+.risk-row {
+  background: var(--warning-bg);
+}
+
+.risk-val {
+  color: var(--warning-text) !important;
+  font-weight: 700;
   cursor: pointer;
 }
 
-/* Soft pulse */
-@keyframes softPulse {
-  0% { box-shadow: 0 0 0 0 rgba(251,191,36,0.35); }
-  70% { box-shadow: 0 0 0 6px rgba(251,191,36,0); }
-  100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+/* ======================================================
+   SIDEBAR & UTILS
+====================================================== */
+.sidebar {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 400px;
+  max-width: 100%;
+  background: #fff;
+  z-index: 1001;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-td.clickable.risk-amount {
-  animation: softPulse 2.5s ease-out infinite;
+.sidebar.active { transform: translateX(0); }
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-
-/* Warna khusus untuk selisih/kurang bayar di sidebar */
-.text-amber {
-  color: #b45309 !important; /* Warna Amber/Cokelat Keemasan */
-  font-size: 18px !important; /* Sedikit lebih besar agar menonjol */
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-muted);
 }
 
-/* Opsional: Beri background soft amber pada box step 6 agar lebih kontras */
-.text-amber.parent-item {
-  background-color: #fffbeb;
-  border-left: 3px solid #f59e0b;
+.sidebar-content {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  z-index: 1000;
+  display: none;
+}
+
+.sidebar-overlay.active { display: block; }
+
+.site-footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 40px;
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+  .card { padding: 20px; }
 }
